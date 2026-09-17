@@ -1,16 +1,94 @@
-# React + Vite
+# to-do-list-react-app
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Personal to-do list web application with a React + Vite front-end and a Node.js + Express backend microservice, all containerized with Docker.
 
-Currently, two official plugins are available:
+## Project Structure
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```
+to-do-list-react-app/
+├── to-do-list-app/          # React + Vite front-end (TypeScript)
+│   ├── src/
+│   │   ├── App.tsx          # Main to-do list UI with full CRUD
+│   │   ├── main.tsx         # React entry point
+│   │   ├── vite-env.d.ts   # CSS module declarations
+│   │   └── ...
+│   ├── tsconfig.json
+│   └── ...
+└── to-do-list-backend/      # Node.js + Express API microservice (TypeScript)
+    ├── src/
+    │   ├── index.ts         # Express server entry point
+    │   ├── db.ts            # PostgreSQL connection pool
+    │   └── todoRoutes.ts   # CRUD routes for todo_list_table
+    ├── tsconfig.json
+    └── ...
+```
 
-## React Compiler
+## Architecture
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+┌─────────────────┐       ┌──────────────────┐       ┌─────────────────┐
+│  React + Vite   │  HTTP │  Node.js +       │  SQL  │  PostgreSQL     │
+│  Front-end      │ ─────▶│  Express Backend │ ─────▶│  (Docker)       │
+│  (to-do-list-app)│       │  (to-do-list-backend)│    │  todo_list_table│
+└─────────────────┘       └──────────────────┘       └─────────────────┘
+```
 
-## Expanding the Oxlint configuration
+All services run in Docker containers via `docker-compose.yml` (to be added).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## API Endpoints (to-do-list-backend)
+
+| Method | Endpoint           | Description            |
+|--------|--------------------|------------------------|
+| GET    | `/api/todos`       | Get all to-do items    |
+| GET    | `/api/todos/:id`   | Get a single to-do     |
+| POST   | `/api/todos`       | Create a new to-do     |
+| PUT    | `/api/todos/:id`   | Update a to-do (title or completed) |
+| DELETE | `/api/todos/:id`   | Delete a to-do         |
+| GET    | `/health`          | Health check           |
+
+## Database Schema
+
+Table: `todo_list_table`
+
+| Column       | Type                      | Notes                          |
+|--------------|---------------------------|--------------------------------|
+| `id`         | SERIAL PRIMARY KEY        | Auto-incrementing ID           |
+| `title`      | VARCHAR(255) NOT NULL     | To-do item title               |
+| `completed`  | BOOLEAN NOT NULL DEFAULT FALSE | Completion status         |
+| `created_at` | TIMESTAMP DEFAULT CURRENT_TIMESTAMP | Creation timestamp |
+
+## Environment Variables (Backend)
+
+| Variable        | Default         | Description           |
+|-----------------|-----------------|-----------------------|
+| `DB_HOST`       | `localhost`     | PostgreSQL host       |
+| `DB_PORT`       | `5432`          | PostgreSQL port       |
+| `DB_NAME`       | `todo_db`       | Database name         |
+| `DB_USER`       | `todo_user`     | Database user         |
+| `DB_PASSWORD`   | `change_me`     | Database password     |
+| `PORT`          | `3001`          | Backend server port   |
+
+## Getting Started
+
+### Front-end
+
+```bash
+cd to-do-list-app
+npm install
+npm run dev      # Start Vite dev server
+npm run build    # Production build
+```
+
+### Back-end
+
+```bash
+cd to-do-list-backend
+npm install
+npm run dev      # Start with tsx (auto-reload)
+npm run build    # Compile TypeScript
+npm start        # Run compiled JS
+```
+
+---
+
+**Jives** is helping to create this React web app.
