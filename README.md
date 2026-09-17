@@ -1,16 +1,16 @@
-# to-do-list-react-app
+# React + Vite
 
-This repo contains a React + Vite front-end web app that serves as a personal to-do list application.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-## Architecture
+Currently, two official plugins are available:
 
-The app consists of the following components, each running in Docker containers:
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-- **React + Vite front-end** — The personal to-do list web app UI
-- **Node.js + Express backend microservice** — API layer that the front-end communicates with
-- **PostgreSQL database** — Persistent storage managed by the backend service
+## React Compiler
 
-The front-end talks to the Node.js/Express backend, which in turn communicates with the PostgreSQL database instance. All services are containerized using Docker.
----
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-**Jives** will be helping to create this React web app.
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
