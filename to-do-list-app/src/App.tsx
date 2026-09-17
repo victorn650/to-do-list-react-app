@@ -1,40 +1,47 @@
-import { useState } from 'react'
+import { FC, useState } from 'react'
 import './App.css'
 
-function App() {
-  const [todos, setTodos] = useState([])
-  const [newTitle, setNewTitle] = useState('')
-  const [editingId, setEditingId] = useState(null)
-  const [editTitle, setEditTitle] = useState('')
+interface Todo {
+  id: number
+  title: string
+  completed: boolean
+  created_at: string
+}
+
+const App: FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([])
+  const [newTitle, setNewTitle] = useState<string>('')
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editTitle, setEditTitle] = useState<string>('')
 
   const addTodo = () => {
     if (!newTitle.trim()) return
-    const todo = {
+    const todo: Todo = {
       id: Date.now(),
       title: newTitle.trim(),
       completed: false,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     }
     setTodos([...todos, todo])
     setNewTitle('')
   }
 
-  const toggleComplete = (id) => {
+  const toggleComplete = (id: number) => {
     setTodos(todos.map(t =>
       t.id === id ? { ...t, completed: !t.completed } : t
     ))
   }
 
-  const deleteTodo = (id) => {
+  const deleteTodo = (id: number) => {
     setTodos(todos.filter(t => t.id !== id))
   }
 
-  const startEdit = (todo) => {
+  const startEdit = (todo: Todo) => {
     setEditingId(todo.id)
     setEditTitle(todo.title)
   }
 
-  const saveEdit = (id) => {
+  const saveEdit = (id: number) => {
     if (!editTitle.trim()) return
     setTodos(todos.map(t =>
       t.id === id ? { ...t, title: editTitle.trim() } : t
@@ -77,7 +84,10 @@ function App() {
             <p className="empty-state">No tasks yet. Add one above!</p>
           )}
           {todos.map(todo => (
-            <div key={todo.id} className={`todo-item ${todo.completed ? 'completed' : ''}`}>
+            <div
+              key={todo.id}
+              className={`todo-item ${todo.completed ? 'completed' : ''}`}
+            >
               {editingId === todo.id ? (
                 <div className="edit-mode">
                   <input
