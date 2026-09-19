@@ -39,11 +39,11 @@ All services run in Docker containers via `docker-compose.yml` (to be added).
 
 | Method | Endpoint           | Description            |
 |--------|--------------------|------------------------|
-| GET    | `/api/todos`       | Get all to-do items    |
-| GET    | `/api/todos/:id`   | Get a single to-do     |
-| POST   | `/api/todos`       | Create a new to-do     |
-| PUT    | `/api/todos/:id`   | Update a to-do (title or completed) |
-| DELETE | `/api/todos/:id`   | Delete a to-do         |
+| GET    | `/api/todo_list_table`       | Get all to-do items    |
+| GET    | `/api/todo_list_table/:id`   | Get a single to-do     |
+| POST   | `/api/todo_list_table`       | Create a new to-do     |
+| PUT    | `/api/todo_list_table/:id`   | Update a to-do (title or completed) |
+| DELETE | `/api/todo_list_table/:id`   | Delete a to-do         |
 | GET    | `/health`          | Health check           |
 
 ## Database Schema

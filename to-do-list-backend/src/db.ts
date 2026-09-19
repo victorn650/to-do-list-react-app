@@ -6,4 +6,4 @@ export const pool = new Pool({
   database: process.env.DB_NAME || "todo_db",
   user: process.env.DB_USER || "todo_user",
   password: process.env.DB_PASSWORD || "change_me",
-})
+});
