@@ -26,6 +26,6 @@ app.post("/api/todos", createTodo)
 app.put("/api/todos/:id", updateTodo)
 app.delete("/api/todos/:id", deleteTodo)
 
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   console.log(`🚀 To-Do List API server running on http://localhost:${PORT}`)
 })
