@@ -3,5 +3,5 @@ export const getTodoList = async () => {
     console.log('backend service url:', VITE_BACKEND_SERVICE_URL);
     const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos`);
     console.log('get to do list result:', result);
-    return result;
+    return result.json();
 };
