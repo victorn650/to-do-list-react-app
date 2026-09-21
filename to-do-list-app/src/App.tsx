@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import './App.css'
-import { getTodoList } from './utils/todoListUtil'
+import { deleteTodo, editTodo, getTodoList, insertTodo } from './utils/todoListUtil'
 
 interface Todo {
   id: number
@@ -25,25 +25,36 @@ const App: FC = () => {
     getItems();
   }, []);
 
-  const addTodo = () => {
-    if (!newTitle.trim()) return
+  const addTodo = async () => {
+    if (!newTitle.trim()) return;
     const todo: Todo = {
       id: Date.now(),
       title: newTitle.trim(),
       completed: false,
       created_at: new Date().toISOString(),
+    };
+    const result = await insertTodo(todo);
+    console.log('add todo:', result);
+    if (result && result.id === todo.id) {
+      setTodos([...todos, todo]);
+      setNewTitle('');
     }
-    setTodos([...todos, todo])
-    setNewTitle('')
-  }
+  };
 
-  const toggleComplete = (id: number) => {
+  const toggleComplete = async (id: number) => {
+    const completeItem = todos.find(item => item.id === id);
+    if (completeItem) {
+      const result = editTodo(id, completeItem.title, !completeItem.completed);
+      console.log('complete todo:', result);
+    }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, completed: !t.completed } : t
     ))
   }
 
-  const deleteTodo = (id: number) => {
+  const deleteTodoItem = async (id: number) => {
+    const result = await deleteTodo(id);
+    console.log('delete item:', result);
     setTodos(todos.filter(t => t.id !== id))
   }
 
@@ -52,8 +63,13 @@ const App: FC = () => {
     setEditTitle(todo.title)
   }
 
-  const saveEdit = (id: number) => {
-    if (!editTitle.trim()) return
+  const saveEdit = async (id: number) => {
+    if (!editTitle.trim()) return;
+    const updateItem = todos.find(item => item.id === id);
+    if (updateItem) {
+      const result = await editTodo(id, editTitle.trim(), updateItem.completed);
+      console.log('edit item:', result);
+    }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, title: editTitle.trim() } : t
     ))
@@ -127,7 +143,7 @@ const App: FC = () => {
                     <button onClick={() => startEdit(todo)} className="action-btn edit">
                       Edit
                     </button>
-                    <button onClick={() => deleteTodo(todo.id)} className="action-btn delete">
+                    <button onClick={() => deleteTodoItem(todo.id)} className="action-btn delete">
                       Delete
                     </button>
                   </div>
