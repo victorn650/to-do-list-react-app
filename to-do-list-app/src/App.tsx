@@ -19,7 +19,7 @@ const App: FC = () => {
     const getItems = async () => {
       const result = await getTodoList();
       if (result && Array.isArray(result)) {
-        setTodos({ ...todos, ...result });
+        setTodos(result);
       }
     }
     getItems();
