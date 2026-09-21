@@ -28,7 +28,7 @@ export const insertTodo = async (todo: Todo) => {
 
 export const deleteTodo = async (id: number) => {
     const { VITE_BACKEND_SERVICE_URL } = import.meta.env;
-    const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos/:${id}`, {
+    const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos/${id}`, {
         method: 'DELETE',
         headers: {
             'content-type': 'application/json'
@@ -41,7 +41,7 @@ export const deleteTodo = async (id: number) => {
 
 export const editTodo = async (id: number, title: string, completed: boolean) => {
     const { VITE_BACKEND_SERVICE_URL } = import.meta.env;
-    const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos/:${id}`, {
+    const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos/${id}`, {
         method: 'PUT',
         headers: {
             'content-type': 'application/json'

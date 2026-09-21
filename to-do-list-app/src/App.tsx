@@ -35,10 +35,8 @@ const App: FC = () => {
     };
     const result = await insertTodo(todo);
     console.log('add todo:', result);
-    if (result && result.id === todo.id) {
-      setTodos([...todos, todo]);
-      setNewTitle('');
-    }
+    setTodos([...todos, todo]);
+    setNewTitle('');
   };
 
   const toggleComplete = async (id: number) => {
