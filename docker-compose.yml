@@ -6,6 +6,9 @@ services:
       - "5173:80"
     depends_on:
       - backend
+    environment:
+      VITE_BACKEND_SERVICE_URL: backend
+      VITE_BACKEND_SERVICE_PORT: 3001
 
   backend:
     build: ./to-do-list-backend

@@ -1,5 +1,6 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import './App.css'
+import { getTodoList } from './utils/todoListUtil'
 
 interface Todo {
   id: number
@@ -13,6 +14,16 @@ const App: FC = () => {
   const [newTitle, setNewTitle] = useState<string>('')
   const [editingId, setEditingId] = useState<number | null>(null)
   const [editTitle, setEditTitle] = useState<string>('')
+
+  useEffect(() => {
+    const getItems = async () => {
+      const result = await getTodoList();
+      if (result && Array.isArray(result)) {
+        setTodos({ ...todos, ...result });
+      }
+    }
+    getItems();
+  }, []);
 
   const addTodo = () => {
     if (!newTitle.trim()) return

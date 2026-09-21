@@ -4,3 +4,12 @@ declare module '*.css' {
   const content: Record<string, string>
   export default content
 }
+
+interface ImportMetaEnv {
+  readonly VITE_BACKEND_SERVICE_URL: string;
+  readonly VITE_BACKEND_SERVICE_PORT: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
