@@ -42,7 +42,7 @@ const App: FC = () => {
   const toggleComplete = async (id: number) => {
     const completeItem = todos.find(item => item.id === id);
     if (completeItem) {
-      const result = editTodo(id, completeItem.title, !completeItem.completed);
+      const result = editTodo(id, undefined, !completeItem.completed);
       console.log('complete todo:', result);
     }
     setTodos(todos.map(t =>

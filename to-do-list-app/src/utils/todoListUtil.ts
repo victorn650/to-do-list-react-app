@@ -39,7 +39,7 @@ export const deleteTodo = async (id: number) => {
     return deleteResponse;
 };
 
-export const editTodo = async (id: number, title: string, completed: boolean) => {
+export const editTodo = async (id: number, title: string | undefined, completed: boolean) => {
     const { VITE_BACKEND_SERVICE_URL } = import.meta.env;
     const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos/${id}`, {
         method: 'PUT',
