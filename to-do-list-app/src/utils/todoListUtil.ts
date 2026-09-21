@@ -1,8 +1,7 @@
 export const getTodoList = async () => {
-    const { VITE_BACKEND_SERVICE_URL, VITE_BACKEND_SERVICE_PORT } = import.meta.env;
-    const backendUrl = `${VITE_BACKEND_SERVICE_URL}:${VITE_BACKEND_SERVICE_PORT}`;
-    console.log('backend service url:', backendUrl);
-    const result = await fetch(`http://${backendUrl}/api/todos`);
+    const { VITE_BACKEND_SERVICE_URL } = import.meta.env;
+    console.log('backend service url:', VITE_BACKEND_SERVICE_URL);
+    const result = await fetch(`${VITE_BACKEND_SERVICE_URL}/api/todos`);
     console.log('get to do list result:', result);
     return result;
 };
