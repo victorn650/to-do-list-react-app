@@ -10,32 +10,35 @@ interface Todo {
 }
 
 const App: FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [newTitle, setNewTitle] = useState<string>('')
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editTitle, setEditTitle] = useState<string>('')
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTitle, setNewTitle] = useState<string>('');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [triggerGetItems, setTriggerGetItems] = useState<boolean>(false);
+  
+  const getItems = async () => {
+    const result = await getTodoList();
+    if (result && Array.isArray(result)) {
+      setTodos(result);
+    }
+  };
 
   useEffect(() => {
-    const getItems = async () => {
-      const result = await getTodoList();
-      if (result && Array.isArray(result)) {
-        setTodos(result);
-      }
-    }
     getItems();
   }, []);
 
+  
+  useEffect(() => {
+    if (triggerGetItems) {
+      getItems();
+      setTriggerGetItems(false);
+    }
+  }, [triggerGetItems]);
+
   const addTodo = async () => {
     if (!newTitle.trim()) return;
-    const todo: Todo = {
-      id: Date.now(),
-      title: newTitle.trim(),
-      completed: false,
-      created_at: new Date().toISOString(),
-    };
-    const result = await insertTodo(todo);
-    console.log('add todo:', result);
-    setTodos([...todos, todo]);
+    await insertTodo(newTitle.trim());
+    setTriggerGetItems(true);
     setNewTitle('');
   };
 
@@ -53,7 +56,9 @@ const App: FC = () => {
   const deleteTodoItem = async (id: number) => {
     const result = await deleteTodo(id);
     console.log('delete item:', result);
-    setTodos(todos.filter(t => t.id !== id))
+    if (result && result.status === 204) {
+      setTodos(todos.filter(t => t.id !== id))
+    }
   }
 
   const startEdit = (todo: Todo) => {
