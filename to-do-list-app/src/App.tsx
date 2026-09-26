@@ -1,6 +1,6 @@
 import { FC, useEffect, useState } from 'react'
 import './App.css'
-import { getTodoList } from './utils/todoListUtil'
+import { deleteTodo, editTodo, getTodoList, insertTodo } from './utils/todoListUtil'
 
 interface Todo {
   id: number
@@ -10,41 +10,55 @@ interface Todo {
 }
 
 const App: FC = () => {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [newTitle, setNewTitle] = useState<string>('')
-  const [editingId, setEditingId] = useState<number | null>(null)
-  const [editTitle, setEditTitle] = useState<string>('')
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [newTitle, setNewTitle] = useState<string>('');
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState<string>('');
+  const [triggerGetItems, setTriggerGetItems] = useState<boolean>(false);
+  
+  const getItems = async () => {
+    const result = await getTodoList();
+    if (result && Array.isArray(result)) {
+      setTodos(result);
+    }
+  };
 
   useEffect(() => {
-    const getItems = async () => {
-      const result = await getTodoList();
-      if (result && Array.isArray(result)) {
-        setTodos(result);
-      }
-    }
     getItems();
   }, []);
 
-  const addTodo = () => {
-    if (!newTitle.trim()) return
-    const todo: Todo = {
-      id: Date.now(),
-      title: newTitle.trim(),
-      completed: false,
-      created_at: new Date().toISOString(),
+  
+  useEffect(() => {
+    if (triggerGetItems) {
+      getItems();
+      setTriggerGetItems(false);
     }
-    setTodos([...todos, todo])
-    setNewTitle('')
-  }
+  }, [triggerGetItems]);
 
-  const toggleComplete = (id: number) => {
+  const addTodo = async () => {
+    if (!newTitle.trim()) return;
+    await insertTodo(newTitle.trim());
+    setTriggerGetItems(true);
+    setNewTitle('');
+  };
+
+  const toggleComplete = async (id: number) => {
+    const completeItem = todos.find(item => item.id === id);
+    if (completeItem) {
+      const result = await editTodo(id, undefined, !completeItem.completed);
+      console.log('complete todo:', result);
+    }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, completed: !t.completed } : t
     ))
   }
 
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(t => t.id !== id))
+  const deleteTodoItem = async (id: number) => {
+    const result = await deleteTodo(id);
+    console.log('delete item:', result);
+    if (result && result.status === 204) {
+      setTodos(todos.filter(t => t.id !== id))
+    }
   }
 
   const startEdit = (todo: Todo) => {
@@ -52,8 +66,13 @@ const App: FC = () => {
     setEditTitle(todo.title)
   }
 
-  const saveEdit = (id: number) => {
-    if (!editTitle.trim()) return
+  const saveEdit = async (id: number) => {
+    if (!editTitle.trim()) return;
+    const updateItem = todos.find(item => item.id === id);
+    if (updateItem) {
+      const result = await editTodo(id, editTitle.trim(), updateItem.completed);
+      console.log('edit item:', result);
+    }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, title: editTitle.trim() } : t
     ))
@@ -127,7 +146,7 @@ const App: FC = () => {
                     <button onClick={() => startEdit(todo)} className="action-btn edit">
                       Edit
                     </button>
-                    <button onClick={() => deleteTodo(todo.id)} className="action-btn delete">
+                    <button onClick={() => deleteTodoItem(todo.id)} className="action-btn delete">
                       Delete
                     </button>
                   </div>
