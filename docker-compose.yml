@@ -2,6 +2,7 @@ services:
 
   frontend:
     build: ./to-do-list-app
+    image: lilmoby14/todo-frontend:latest
     ports:
       - "5173:80"
     depends_on:
@@ -9,6 +10,7 @@ services:
 
   backend:
     build: ./to-do-list-backend
+    image: lilmoby14/todo-backend:latest
     ports:
       - "3001:3001"
     environment:
