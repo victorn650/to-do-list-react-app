@@ -72,3 +72,13 @@ jobs:
       - name: Push backend
         run: |
           docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:${{ github.sha }}
+      
+      - name: Push frontend latest
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend:latest
+
+      - name: Push backend latest
+        if: github.ref == 'refs/heads/main'
+        run: |
+          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:latest
