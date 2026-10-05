@@ -37,6 +37,7 @@ jobs:
           tags: |
             type=ref,event=pr
             type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Generate backend tags
         id: backend-meta
@@ -46,6 +47,7 @@ jobs:
           tags: |
             type=ref,event=pr
             type=sha
+            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build Compose images
         run: |
