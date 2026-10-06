@@ -45,8 +45,7 @@ const App: FC = () => {
   const toggleComplete = async (id: number) => {
     const completeItem = todos.find(item => item.id === id);
     if (completeItem) {
-      const result = await editTodo(id, undefined, !completeItem.completed);
-      console.log('complete todo:', result);
+      await editTodo(id, undefined, !completeItem.completed);
     }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, completed: !t.completed } : t
@@ -55,7 +54,6 @@ const App: FC = () => {
 
   const deleteTodoItem = async (id: number) => {
     const result = await deleteTodo(id);
-    console.log('delete item:', result);
     if (result && result.status === 204) {
       setTodos(todos.filter(t => t.id !== id))
     }
@@ -70,8 +68,7 @@ const App: FC = () => {
     if (!editTitle.trim()) return;
     const updateItem = todos.find(item => item.id === id);
     if (updateItem) {
-      const result = await editTodo(id, editTitle.trim(), updateItem.completed);
-      console.log('edit item:', result);
+      await editTodo(id, editTitle.trim(), updateItem.completed);
     }
     setTodos(todos.map(t =>
       t.id === id ? { ...t, title: editTitle.trim() } : t
