@@ -1,33 +1,38 @@
-
-name: Build and Push Compose Images
+name: Build and Push Docker Images
 
 on:
   push:
     branches:
       - main
+      - k8s
   pull_request:
   workflow_dispatch:
 
 jobs:
   build-and-push:
-    name: Build Compose Images and Push to Registry
+    name: Build and Push Images
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a #v4.0.0
-
       - name: Check out repository
         uses: actions/checkout@v6
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
 
       - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'
         uses: docker/login-action@v4
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # -------------------------------------------------------
+      # Generate Docker tags
+      # -------------------------------------------------------
 
       - name: Generate frontend tags
         id: frontend-meta
@@ -35,9 +40,13 @@ jobs:
         with:
           images: ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend
           tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,prefix=,enable=${{ github.ref == 'refs/heads/main' }}
+
+            type=raw,value=k8s-latest,enable=${{ github.ref == 'refs/heads/k8s' }}
+            type=sha,prefix=k8s-,enable=${{ github.ref == 'refs/heads/k8s' }}
+
             type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Generate backend tags
         id: backend-meta
@@ -45,40 +54,40 @@ jobs:
         with:
           images: ${{ vars.DOCKERHUB_USERNAME }}/todo-backend
           tags: |
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=sha,prefix=,enable=${{ github.ref == 'refs/heads/main' }}
+
+            type=raw,value=k8s-latest,enable=${{ github.ref == 'refs/heads/k8s' }}
+            type=sha,prefix=k8s-,enable=${{ github.ref == 'refs/heads/k8s' }}
+
             type=ref,event=pr
-            type=sha
-            type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build Compose images
-        run: |
-          docker compose build frontend backend
+      # -------------------------------------------------------
+      # Build and push frontend
+      # -------------------------------------------------------
 
-      - name: Tag frontend image
-        run: |
-          docker tag \
-            ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend:latest \
-            ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend:${{ github.sha }}
+      - name: Build and push frontend
+        uses: docker/build-push-action@v7
+        with:
+          context: ./to-do-list-app
+          file: ./to-do-list-app/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.frontend-meta.outputs.tags }}
+          labels: ${{ steps.frontend-meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Tag backend image
-        run: |
-          docker tag \
-            ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:latest \
-            ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:${{ github.sha }}
+      # -------------------------------------------------------
+      # Build and push backend
+      # -------------------------------------------------------
 
-      - name: Push frontend
-        run: |
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend:${{ github.sha }}
-
-      - name: Push backend
-        run: |
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:${{ github.sha }}
-      
-      - name: Push frontend latest
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-frontend:latest
-
-      - name: Push backend latest
-        if: github.ref == 'refs/heads/main'
-        run: |
-          docker push ${{ vars.DOCKERHUB_USERNAME }}/todo-backend:latest
+      - name: Build and push backend
+        uses: docker/build-push-action@v7
+        with:
+          context: ./to-do-list-backend
+          file: ./to-do-list-backend/Dockerfile
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.backend-meta.outputs.tags }}
+          labels: ${{ steps.backend-meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
