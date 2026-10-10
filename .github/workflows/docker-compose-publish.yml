@@ -71,6 +71,7 @@ jobs:
         with:
           context: ./to-do-list-app
           file: ./to-do-list-app/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.frontend-meta.outputs.tags }}
           labels: ${{ steps.frontend-meta.outputs.labels }}
@@ -86,6 +87,7 @@ jobs:
         with:
           context: ./to-do-list-backend
           file: ./to-do-list-backend/Dockerfile
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.backend-meta.outputs.tags }}
           labels: ${{ steps.backend-meta.outputs.labels }}
