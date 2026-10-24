@@ -1,5 +1,6 @@
 import express from "express"
 import cors from "cors"
+import { metricsRegistry, recordHttpMetrics } from "./metrics.js"
 import {
   getTodos,
   getTodoById,
@@ -13,6 +14,17 @@ const PORT = Number(process.env.PORT) || 3001
 
 app.use(cors())
 app.use(express.json())
+app.use(recordHttpMetrics)
+
+app.get("/metrics", async (_req, res) => {
+  try {
+    res.set("Content-Type", metricsRegistry.contentType)
+    res.send(await metricsRegistry.metrics())
+  } catch (error) {
+    console.error("Error collecting metrics:", error)
+    res.status(500).send("Metrics unavailable")
+  }
+})
 
 // Health check
 app.get("/health", (_req, res) => {
